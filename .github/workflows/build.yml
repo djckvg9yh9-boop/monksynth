@@ -10,6 +10,11 @@ permissions:
   contents: read
   actions: read
 
+env:
+  # Flip to 'true' once a production SignPath cert is issued. When 'false'
+  # the Windows VST3 and installer ship unsigned (matching release notes).
+  SIGN_WINDOWS_VIA_SIGNPATH: 'false'
+
 jobs:
   build:
     strategy:
@@ -171,7 +176,7 @@ jobs:
           echo "Found VST3 at: $VST3"
 
       - name: Upload unsigned VST3 bundle (Windows)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         id: upload_vst3_unsigned
         uses: actions/upload-artifact@v7
         with:
@@ -181,7 +186,7 @@ jobs:
           retention-days: 1
 
       - name: Sign VST3 with SignPath
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -194,7 +199,7 @@ jobs:
           output-artifact-directory: ${{ runner.temp }}/signed-vst3
 
       - name: Replace VST3 binary with signed version
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         shell: bash
         run: |
           BUNDLE_PATH="${{ steps.find_vst3.outputs.path }}"
@@ -283,7 +288,7 @@ jobs:
           iscc //DMyAppVersion="${{ steps.version.outputs.number }}" installer/windows/MonkSynth.iss
 
       - name: Upload unsigned Windows installer
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         id: upload_installer_unsigned
         uses: actions/upload-artifact@v7
         with:
@@ -293,7 +298,7 @@ jobs:
           retention-days: 1
 
       - name: Sign Windows installer with SignPath
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         uses: signpath/github-action-submit-signing-request@v2
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -306,7 +311,7 @@ jobs:
           output-artifact-directory: ${{ runner.temp }}/signed-installer
 
       - name: Replace installer with signed version
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.SIGN_WINDOWS_VIA_SIGNPATH == 'true'
         shell: bash
         run: |
           rm -f installer/windows/Output/*.exe
