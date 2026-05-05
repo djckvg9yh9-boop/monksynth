@@ -22,8 +22,8 @@ export PATH="$PREFIX/bin:$PATH"
 # Ensure a recent meson (system packages on Ubuntu 22.04 are too old for
 # newer glib/pango/cairo).  We must put /usr/local/bin BEFORE /usr/bin
 # so pip3's meson wins over the system package.
-pip3 install --break-system-packages meson ninja 2>/dev/null \
-    || pip3 install meson ninja
+pip3 install --upgrade --break-system-packages meson ninja 2>/dev/null \
+    || pip3 install --upgrade meson ninja
 export PATH="/usr/local/bin:$PATH"
 hash -r
 echo "Using meson: $(command -v meson) version $(meson --version)"
