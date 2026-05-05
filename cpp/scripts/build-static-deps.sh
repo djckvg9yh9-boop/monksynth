@@ -54,9 +54,17 @@ XKBCOMMON_VER=1.7.0
 # Helpers
 # ---------------------------------------------------------------------------
 fetch() {
-    local url="$1" dest="$2"
+    local url="$1" dest="$2" fallback="${3:-}"
     echo "--- Downloading $url"
-    curl -fsSL "$url" -o "$dest"
+    if curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors "$url" -o "$dest"; then
+        return 0
+    fi
+    if [ -n "$fallback" ]; then
+        echo "--- Primary failed; falling back to $fallback"
+        curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors "$fallback" -o "$dest"
+    else
+        return 1
+    fi
 }
 
 extract() {
@@ -154,7 +162,9 @@ build_meson "$WORKDIR/pixman" \
 # 6. freetype  (first pass, without harfbuzz)
 # ---------------------------------------------------------------------------
 echo "=== Building freetype $FREETYPE_VER (pass 1, no harfbuzz) ==="
-fetch "https://download.savannah.gnu.org/releases/freetype/freetype-$FREETYPE_VER.tar.xz" "$WORKDIR/freetype.tar.xz"
+fetch "https://download.savannah.gnu.org/releases/freetype/freetype-$FREETYPE_VER.tar.xz" \
+      "$WORKDIR/freetype.tar.xz" \
+      "https://downloads.sourceforge.net/project/freetype/freetype2/$FREETYPE_VER/freetype-$FREETYPE_VER.tar.xz"
 extract "$WORKDIR/freetype.tar.xz" "$WORKDIR/freetype"
 build_meson "$WORKDIR/freetype" \
     -Dharfbuzz=disabled \
