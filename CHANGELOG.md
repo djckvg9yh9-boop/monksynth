@@ -4,6 +4,11 @@ All notable changes to MonkSynth will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0-beta.12] - 2026-05-05
+
+### Fixed
+- Linux VST3 no longer fails to load in Bitwig (and other hosts) with `undefined symbol: g_list_model_get_type`. Pango 1.56 introduced GListModel-based font enumeration that depends on libgio-2.0 (`g_list_model_get_type`, `g_io_error_quark`, `g_list_model_get_n_items`, `g_list_model_items_changed`), but the static-link group only included libglib-2.0 and libgobject-2.0. Adding libgio-2.0 and libgmodule-2.0 resolves the four undefined symbols. Thanks to @skei for the report (#13).
+
 ## [0.2.0-beta.11] - 2026-04-15
 
 ### Fixed
