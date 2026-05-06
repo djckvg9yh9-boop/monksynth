@@ -41,6 +41,8 @@ FREETYPE_VER=2.13.3
 FONTCONFIG_VER=2.16.0
 HARFBUZZ_VER=10.4.0
 CAIRO_VER=1.18.4
+LIBDATRIE_VER=0.2.14
+LIBTHAI_VER=0.1.30
 PANGO_VER=1.56.1
 PANGO_MAJOR_MINOR=1.56
 XCB_UTIL_VER=0.4.1
@@ -170,7 +172,7 @@ build_meson "$WORKDIR/freetype" \
     -Dharfbuzz=disabled \
     -Dpng=enabled \
     -Dzlib=enabled \
-    -Dbzip2=enabled \
+    -Dbzip2=disabled \
     -Dbrotli=disabled
 
 # ---------------------------------------------------------------------------
@@ -208,7 +210,7 @@ build_meson "$WORKDIR/freetype" \
     -Dharfbuzz=enabled \
     -Dpng=enabled \
     -Dzlib=enabled \
-    -Dbzip2=enabled \
+    -Dbzip2=disabled \
     -Dbrotli=disabled
 
 # ---------------------------------------------------------------------------
@@ -227,14 +229,41 @@ build_meson "$WORKDIR/cairo" \
     -Dglib=enabled
 
 # ---------------------------------------------------------------------------
-# 11. pango
+# 11. libdatrie  (libthai dependency)
+# ---------------------------------------------------------------------------
+echo "=== Building libdatrie $LIBDATRIE_VER ==="
+fetch "https://github.com/tlwg/libdatrie/releases/download/v$LIBDATRIE_VER/libdatrie-$LIBDATRIE_VER.tar.xz" "$WORKDIR/libdatrie.tar.xz"
+extract "$WORKDIR/libdatrie.tar.xz" "$WORKDIR/libdatrie"
+build_autotools "$WORKDIR/libdatrie"
+
+# ---------------------------------------------------------------------------
+# 12. libthai  (pango Thai shaping/word-breaking)
+# ---------------------------------------------------------------------------
+echo "=== Building libthai $LIBTHAI_VER ==="
+fetch "https://github.com/tlwg/libthai/releases/download/v$LIBTHAI_VER/libthai-$LIBTHAI_VER.tar.xz" "$WORKDIR/libthai.tar.xz"
+extract "$WORKDIR/libthai.tar.xz" "$WORKDIR/libthai"
+build_autotools "$WORKDIR/libthai"
+
+# Promote libdatrie from a private to a public Requires in libthai's .pc
+# file. Otherwise meson-based consumers (pango's utilities, anything that
+# does dependency('libthai')) silently drop libdatrie from the link line
+# and fail with unresolved trie_state_* symbols. This is correct because
+# we're shipping static .a archives where libthai's API is meaningless
+# without libdatrie.
+sed -i 's|^Requires\.private: datrie|Requires: datrie|' \
+    "$PREFIX/lib/pkgconfig/libthai.pc"
+
+# ---------------------------------------------------------------------------
+# 13. pango
 # ---------------------------------------------------------------------------
 echo "=== Building pango $PANGO_VER ==="
 fetch "https://download.gnome.org/sources/pango/$PANGO_MAJOR_MINOR/pango-$PANGO_VER.tar.xz" "$WORKDIR/pango.tar.xz"
 extract "$WORKDIR/pango.tar.xz" "$WORKDIR/pango"
 build_meson "$WORKDIR/pango" \
     -Dintrospection=disabled \
-    -Dfontconfig=enabled
+    -Dfontconfig=enabled \
+    -Dbuild-testsuite=false \
+    -Dbuild-examples=false
 
 # ---------------------------------------------------------------------------
 # 12. xcb-util

@@ -11,7 +11,7 @@
      find_package(X11 REQUIRED)
      find_package(Freetype REQUIRED)
      find_package(PkgConfig REQUIRED)
-@@ -70,24 +72,87 @@
+@@ -70,24 +72,90 @@
      pkg_check_modules(CAIRO REQUIRED cairo)
      pkg_check_modules(PANGO REQUIRED pangocairo pangoft2)
      pkg_check_modules(FONTCONFIG REQUIRED fontconfig)
@@ -64,6 +64,8 @@
 +        _find_static(GOBJECT_S      gobject-2.0)
 +        _find_static(GIO_S          gio-2.0)
 +        _find_static(GMODULE_S      gmodule-2.0)
++        _find_static(THAI_S         thai)
++        _find_static(DATRIE_S       datrie)
 +        _find_static(FRIBIDI_S      fribidi)
 +        _find_static(PIXMAN_S       pixman-1)
 +        _find_static(PCRE2_S        pcre2-8)
@@ -81,6 +83,7 @@
 +            ${PANGO_S} ${PANGOFT2_S} ${PANGO_CORE_S}
 +            ${CAIRO_S} ${HARFBUZZ_S} ${FONTCONFIG_S} ${FREETYPE_S}
 +            ${GLIB_S} ${GOBJECT_S} ${GIO_S} ${GMODULE_S}
++            ${THAI_S} ${DATRIE_S}
 +            ${FRIBIDI_S} ${PIXMAN_S}
 +            ${PCRE2_S} ${FFI_S}
 +            ${XCB_CURSOR_S} ${XCB_IMAGE_S} ${XCB_RENDER_U_S}
@@ -90,7 +93,7 @@
 +            ${X11_LIBRARIES}
 +            xcb xcb-xkb xcb-render xcb-shm
 +            Xrender
-+            expat png z bz2
++            expat png z
 +            Threads::Threads
 +            dl
 +        )
