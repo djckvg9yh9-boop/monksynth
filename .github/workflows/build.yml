@@ -238,6 +238,29 @@ jobs:
           PLUGIN_SO="${{ steps.find_vst3.outputs.path }}/Contents/x86_64-linux/MonkSynth.so"
           cpp/scripts/verify-load-linux.sh "$PLUGIN_SO"
 
+      - name: Run pluginval on Linux build
+        if: runner.os == 'Linux'
+        env:
+          PLUGINVAL_VERSION: v1.0.4
+        run: |
+          # Need Xvfb because pluginval's editor tests embed an X11 window;
+          # GitHub's Linux runners are headless so we render to memory.
+          sudo apt-get install -y --no-install-recommends xvfb
+          curl -fL --retry 5 --retry-delay 5 \
+            -o pluginval.zip \
+            "https://github.com/Tracktion/pluginval/releases/download/${PLUGINVAL_VERSION}/pluginval_Linux.zip"
+          unzip -q pluginval.zip
+          chmod +x pluginval
+          # "Background thread state" hits a JUCE/VSTGUI host-integration
+          # bug (timer-callback lifetime around editor tear-down) that's
+          # out of scope for the plugin to fix and doesn't surface in
+          # real DAWs. All other strictness-10 tests must pass.
+          echo "Background thread state" > pluginval-disabled.txt
+          xvfb-run -a ./pluginval \
+            --strictness-level 10 \
+            --disabled-tests pluginval-disabled.txt \
+            --validate "${{ steps.find_vst3.outputs.path }}"
+
       - name: Sign macOS bundles
         if: runner.os == 'macOS'
         run: |

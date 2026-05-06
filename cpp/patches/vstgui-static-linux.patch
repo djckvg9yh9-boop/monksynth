@@ -120,3 +120,19 @@
  endif()
  
  ##########################################################################################
+--- a/vstgui4/vstgui/lib/platform/linux/x11platform.cpp
++++ b/vstgui4/vstgui/lib/platform/linux/x11platform.cpp
+@@ -185,7 +185,12 @@ struct RunLoop::Impl : IEventHandler
+ 				xcb_cursor_context_free (cursorContext);
+ 			}
+ 
+-			xcb_disconnect (xcbConnection);
++			// MONKSYNTH: Cairo's process-global xcb_connection_t* cache
++			// cannot be invalidated. Disconnecting here and reconnecting
++			// on the next editor attach can return a recycled pointer
++			// that aliases cairo's stale entry, asserting in
++			// _cairo_xcb_screen_get. Leak the connection (~1 fd) per
++			// init/exit cycle to keep cairo's cache consistent.
+ 		}
+ 		RunLoop::get ()->unregisterEventHandler (this);
+ 	}
