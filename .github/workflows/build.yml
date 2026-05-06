@@ -251,14 +251,17 @@ jobs:
             "https://github.com/Tracktion/pluginval/releases/download/${PLUGINVAL_VERSION}/pluginval_Linux.zip"
           unzip -q pluginval.zip
           chmod +x pluginval
-          # "Background thread state" hits a JUCE/VSTGUI host-integration
-          # bug (timer-callback lifetime around editor tear-down) that's
-          # out of scope for the plugin to fix and doesn't surface in
-          # real DAWs. All other strictness-10 tests must pass.
-          echo "Background thread state" > pluginval-disabled.txt
+          # "Background thread state" hits a bug in pluginval's own
+          # JUCE-based host adapter (juce::RunLoop::TimerCaller lifetime
+          # around editor tear-down) that doesn't exist in real DAWs --
+          # Bitwig/Reaper aren't JUCE-based. All other strictness-10
+          # tests must pass. Note: pluginval requires an ABSOLUTE path
+          # for --disabled-tests; relative paths are silently ignored.
+          DISABLED="$PWD/pluginval-disabled.txt"
+          echo "Background thread state" > "$DISABLED"
           xvfb-run -a ./pluginval \
             --strictness-level 10 \
-            --disabled-tests pluginval-disabled.txt \
+            --disabled-tests "$DISABLED" \
             --validate "${{ steps.find_vst3.outputs.path }}"
 
       - name: Sign macOS bundles
