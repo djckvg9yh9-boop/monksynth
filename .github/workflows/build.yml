@@ -232,6 +232,12 @@ jobs:
           fi
           echo "Static linking verified."
 
+      - name: Verify Linux load on common distros
+        if: runner.os == 'Linux'
+        run: |
+          PLUGIN_SO="${{ steps.find_vst3.outputs.path }}/Contents/x86_64-linux/MonkSynth.so"
+          cpp/scripts/verify-load-linux.sh "$PLUGIN_SO"
+
       - name: Sign macOS bundles
         if: runner.os == 'macOS'
         run: |
