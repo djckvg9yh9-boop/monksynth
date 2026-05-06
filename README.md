@@ -71,6 +71,17 @@ CI runs the test suite on the Linux job before packaging each release, so any DS
 - **Windows:** Run the `.exe` installer — installs the VST3 plugin
 - **Linux:** Extract and copy `MonkSynth.vst3` to `~/.vst3/`
 
+### Linux compatibility
+
+The Linux build is verified on each release to load cleanly under strict loader semantics (Bitwig-style `dlopen(RTLD_NOW)`) on these distro families:
+
+- Ubuntu 22.04 / 24.04 LTS (and derivatives: Linux Mint, Pop!_OS, Elementary, KDE neon)
+- Debian 12 (and derivatives: KX Studio, AV Linux, MX Linux)
+- Fedora (latest)
+- Arch Linux (and derivatives: Manjaro, EndeavourOS, CachyOS)
+
+If your distro isn't listed it most likely still works — these are smoke-tested in CI to catch the missing-shared-library class of bug, not an exhaustive support claim. The plugin is built on Ubuntu 22.04 (glibc 2.35), so any distro with glibc ≥ 2.35 should be compatible. Reports from other distros are welcome via [GitHub Issues](https://github.com/JonET/monksynth/issues).
+
 ## Themes
 
 MonkSynth ships without a built-in theme. On first launch, it shows a setup screen where you can import the classic look from the original Delay Lama DLL (available as freeware from [audionerdz.nl](http://www.audionerdz.nl/download.htm)).

@@ -4,6 +4,16 @@ All notable changes to MonkSynth will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0-beta.13] - 2026-05-06
+
+### Fixed
+- Linux VST3 no longer fails to load on distros without libthai installed (e.g. Linux Mint, Arch). Pango pulls libthai for Thai word-breaking; the static build now bundles libthai 0.1.30 and libdatrie 0.2.14 so the symbols resolve regardless of host environment. Symptom previously seen as `undefined symbol: th_uni2tis` in Bitwig (which uses `dlopen(RTLD_NOW)`), or as a delayed segfault when the editor opened in hosts using lazy symbol resolution. Refs #13.
+- Linux VST3 no longer requires `libbz2.so.1.0` at runtime, which Fedora and other RPM-based distros don't ship (they have `libbz2.so.1` only). Disabled bzip2 support in the bundled freetype since BZIP2-compressed PCF fonts are vanishingly rare. May resolve the load-time segfault under Carla on Debian reported in #1.
+
+### Added
+- `cpp/scripts/verify-load-linux.sh`: spins up containers for Ubuntu 22.04 / 24.04, Debian 12, Fedora, and Arch and verifies the Linux VST3 loads cleanly under strict `dlopen(RTLD_NOW)` semantics (the same loader behavior Bitwig uses). Runs in CI on every push so this class of cross-distro library bug fails the build instead of escaping to a user.
+- README section listing supported Linux distro families and the glibc 2.35 minimum.
+
 ## [0.2.0-beta.12] - 2026-05-05
 
 ### Fixed
