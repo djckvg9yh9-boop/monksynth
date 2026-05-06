@@ -136,3 +136,25 @@
  		}
  		RunLoop::get ()->unregisterEventHandler (this);
  	}
+--- a/vstgui4/vstgui/lib/platform/linux/x11frame.cpp
++++ b/vstgui4/vstgui/lib/platform/linux/x11frame.cpp
+@@ -643,12 +643,18 @@ Frame::Frame (IPlatformFrameCallback* frame, const CRect& size, uint32_t parent,
+ 	auto cfg = dynamic_cast<FrameConfig*> (config);
+ 	if (cfg && cfg->runLoop)
+ 	{
+-		RunLoop::init ();
++		// MONKSYNTH: setRunLoop MUST happen before RunLoop::init() because
++		// init() immediately calls RunLoop::get()->registerEventHandler(...).
++		// Hosts like Bitwig don't supply IRunLoop via setHostContext, so the
++		// LinuxFactory's runloop is null until this fallback runs. Upstream
++		// order set the runloop AFTER init(), causing a NULL deref at
++		// registerEventHandler in any host that didn't pre-set IRunLoop.
+ 		if (auto f = getPlatformFactory ().asLinuxFactory ())
+ 		{
+ 			if (f->getRunLoop () == nullptr)
+ 				f->setRunLoop (cfg->runLoop);
+ 		}
++		RunLoop::init ();
+ 	}
+ 
+ 	impl = std::unique_ptr<Impl> (new Impl (parent, {size.getWidth (), size.getHeight ()}, frame));

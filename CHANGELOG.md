@@ -4,6 +4,15 @@ All notable changes to MonkSynth will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0-beta.14] - 2026-05-06
+
+### Fixed
+- Linux VST3 no longer crashes the plugin host process when the editor opens in Bitwig. Patched VSTGUI's `x11frame.cpp` to call `setRunLoop` before `RunLoop::init()` -- the upstream order tried to register an event handler against the LinuxFactory's runloop before the fallback wired one in from the plugFrame, causing a NULL deref in any host that doesn't supply `Steinberg::Linux::IRunLoop` via `setHostContext` (Bitwig). REAPER was unaffected because it sets the host context up front. Refs #13.
+- Linux VST3 no longer hits a `_get_screen_index` cairo assertion when an editor is closed and reopened. Patched VSTGUI's `RunLoop::Impl::exit()` to skip `xcb_disconnect` -- cairo's process-global xcb_connection_t cache can't be invalidated, so a recycled connection pointer on next attach aliased the freed setup. Costs ~1 fd per init/exit cycle.
+
+### Added
+- pluginval (Tracktion) now runs in CI against every Linux build at strictness level 10. Validates audio processing across 15 sample-rate/block-size combinations, parameter automation, state save/load, fuzz parameters, and editor lifecycle. The Bitwig and cairo bugs above were both surfaced by this step.
+
 ## [0.2.0-beta.13] - 2026-05-06
 
 ### Fixed
