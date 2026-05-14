@@ -106,19 +106,19 @@ Parameter names (shown in your DAW's automation lanes) stay English on purpose â
 
 ## Code Signing Policy
 
-Free code signing on Windows is provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
 
-The Windows VST3 plugin and installer are signed as part of the release build in GitHub Actions. Signing requests are submitted to SignPath only for tagged releases built from this repository.
+The Windows VST3 plugin and installer are signed as part of the release build in GitHub Actions. Signing requests are submitted to SignPath only for tagged releases built from this repository, and each request is manually approved in the SignPath UI before the certificate is applied.
 
 | Privileged role | Signer |
 |-----------------|--------|
-| Committer       | [Jonathan Taylor](https://github.com/JonET) |
+| Author          | [Jonathan Taylor](https://github.com/JonET) |
 | Reviewer        | [Jonathan Taylor](https://github.com/JonET) |
 | Approver        | [Jonathan Taylor](https://github.com/JonET) |
 
-### Privacy
+### Privacy Policy
 
-MonkSynth is an offline audio plugin. It does not transmit any data over the network, and it does not collect telemetry or personal information.
+This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it.
 
 ## Acknowledgments
 
