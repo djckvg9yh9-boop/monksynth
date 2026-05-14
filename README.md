@@ -104,12 +104,29 @@ The plugin UI (setup screen, info overlay, right-click menu, and DLL-importer er
 
 Parameter names (shown in your DAW's automation lanes) stay English on purpose — tutorials, presets, and community discussion all assume the English names.
 
+## Code Signing Policy
+
+Free code signing on Windows is provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+The Windows VST3 plugin and installer are signed as part of the release build in GitHub Actions. Signing requests are submitted to SignPath only for tagged releases built from this repository.
+
+| Privileged role | Signer |
+|-----------------|--------|
+| Committer       | [Jonathan Taylor](https://github.com/JonET) |
+| Reviewer        | [Jonathan Taylor](https://github.com/JonET) |
+| Approver        | [Jonathan Taylor](https://github.com/JonET) |
+
+### Privacy
+
+MonkSynth is an offline audio plugin. It does not transmit any data over the network, and it does not collect telemetry or personal information.
+
 ## Acknowledgments
 
 - [Delay Lama](http://www.audionerdz.nl/) by AudioNerdz (2002) — the beloved freeware VST plugin that inspired this project
 - Xavier Rodet (IRCAM) — formant-wave-function (FOF) synthesis technique
 - [stb_image_write](https://github.com/nothings/stb) by Sean Barrett — single-header image writing (MIT / public domain)
 - [VST3 SDK](https://github.com/steinbergmedia/vst3sdk) by Steinberg — plugin framework (MIT)
+- [SignPath Foundation](https://signpath.org/) — free Windows code signing for open source projects
 
 ## License
 

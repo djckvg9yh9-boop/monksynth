@@ -4,6 +4,11 @@ All notable changes to MonkSynth will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0-beta.15] - 2026-05-14
+
+### Added
+- Windows VST3 plugin and installer are now code-signed via [SignPath Foundation](https://signpath.org/). Signing happens automatically for tagged releases in CI; signing requests require manual approval in the SignPath UI before the workflow proceeds.
+
 ## [0.2.0-beta.14] - 2026-05-06
 
 ### Fixed

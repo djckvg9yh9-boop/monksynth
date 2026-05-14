@@ -11,9 +11,11 @@ permissions:
   actions: read
 
 env:
-  # Flip to 'true' once a production SignPath cert is issued. When 'false'
-  # the Windows VST3 and installer ship unsigned (matching release notes).
-  SIGN_WINDOWS_VIA_SIGNPATH: 'false'
+  # Production SignPath certificate issued 2026-05-12. Signing requests
+  # against the release-signing policy require manual approval in the
+  # SignPath UI, so the workflow will pause at the sign steps until
+  # approved.
+  SIGN_WINDOWS_VIA_SIGNPATH: 'true'
 
 jobs:
   build:
@@ -192,7 +194,7 @@ jobs:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: '998d67e2-a2e5-4daa-abae-4093c3c45fa7'
           project-slug: 'monksynth'
-          signing-policy-slug: 'test-signing'
+          signing-policy-slug: 'release-signing'
           artifact-configuration-slug: 'initial'
           github-artifact-id: ${{ steps.upload_vst3_unsigned.outputs.artifact-id }}
           wait-for-completion: true
@@ -336,7 +338,7 @@ jobs:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: '998d67e2-a2e5-4daa-abae-4093c3c45fa7'
           project-slug: 'monksynth'
-          signing-policy-slug: 'test-signing'
+          signing-policy-slug: 'release-signing'
           artifact-configuration-slug: 'windows-installer'
           github-artifact-id: ${{ steps.upload_installer_unsigned.outputs.artifact-id }}
           wait-for-completion: true
@@ -520,7 +522,7 @@ jobs:
           - **Linux (VST3):** Extract and copy to `~/.vst3/`
 
           ### Notes
-          - Windows: unsigned — SmartScreen may show a warning. Click **More info** → **Run anyway**
+          - Windows build is signed by [SignPath Foundation](https://signpath.org). The certificate is newly issued, so SmartScreen may still show a warning until reputation builds — click **More info** → **Run anyway** if so
           - macOS build is Universal (arm64 + x86_64), signed and notarized
           - Requires a DAW with VST3 support (or AU on macOS)
           EOF
